@@ -1,6 +1,4 @@
-
-using API.Data;
-using Microsoft.EntityFrameworkCore;
+using API.Extensions;
 
 namespace API
 {
@@ -13,12 +11,9 @@ namespace API
             // Add services to the container.
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<DataContext>(opt => 
-            {
-                opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+            builder.Services.AddApplicationServices(builder.Configuration);
 
-            builder.Services.AddCors();
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -27,6 +22,10 @@ namespace API
             .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
             app.MapControllers();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.Run();
         }
