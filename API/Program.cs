@@ -1,35 +1,14 @@
 using System.Text;
-using API.Data;
-using API.Interfaces;
-using API.Services;
+using API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddApplicationServices(builder.Configuration);
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
-
-builder.Services.AddCors();
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-{
-    var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("TokenKey not found in appsettings.json - Program.cs");
-    opt.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-        ValidateAudience = false,
-        ValidateIssuer = false
-    };
-});
-
-builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
