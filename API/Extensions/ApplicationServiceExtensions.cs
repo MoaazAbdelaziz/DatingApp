@@ -19,6 +19,8 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<ITokenService, TokenService>();
 
+        services.AddScoped<IMemberRepository, MemberRepository>();
+
         return services;
     }
 }
