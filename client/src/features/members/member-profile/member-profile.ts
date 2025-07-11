@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { Member } from '../../../types/member';
 import { ActivatedRoute } from '@angular/router';
+import { Member } from '../../../types/member';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -10,14 +10,12 @@ import { DatePipe } from '@angular/common';
   styleUrl: './member-profile.css',
 })
 export class MemberProfile implements OnInit {
-  protected member = signal<Member | undefined>(undefined);
   private route = inject(ActivatedRoute);
+  protected member = signal<Member | undefined>(undefined);
 
   ngOnInit(): void {
-    this.route.parent?.data.subscribe({
-      next: (data) => {
-        this.member.set(data['member']);
-      },
+    this.route.parent?.data.subscribe((data) => {
+      this.member.set(data['member']);
     });
   }
 }

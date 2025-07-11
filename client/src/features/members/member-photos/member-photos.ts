@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MemberService } from '../../../core/services/member-service';
 import { ActivatedRoute } from '@angular/router';
-import { Photo } from '../../../types/member';
 import { Observable } from 'rxjs';
+import { Photo } from '../../../types/member';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -14,7 +14,6 @@ import { AsyncPipe } from '@angular/common';
 export class MemberPhotos {
   private memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
-
   protected photos$?: Observable<Photo[]>;
 
   constructor() {
@@ -26,7 +25,7 @@ export class MemberPhotos {
 
   get photoMocks() {
     return Array.from({ length: 20 }, (_, i) => ({
-      url: "/user.png",
+      url: '/user.png',
     }));
   }
 }
