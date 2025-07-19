@@ -11,7 +11,7 @@ namespace API.Controllers;
 public class MembersController(IMemberRepository memberRepository, IPhotoService photoService) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Member>>> GetMembers([FromQuery] MemberParams memberParams)
+    public async Task<ActionResult<PaginatedResult<Member>>> GetMembers([FromQuery] MemberParams memberParams)
     {
         memberParams.CurrentMemberId = User.GetMemberId();
 
