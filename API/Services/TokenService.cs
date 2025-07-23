@@ -1,15 +1,17 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
-public class TokenService(IConfiguration config) : ITokenService
+public class TokenService(IConfiguration config, UserManager<AppUser> userManager) : ITokenService
 {
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
         var tokenKey = config["TokenKey"] ?? throw new Exception("TokenKey not found in appsettings.json");
 
@@ -21,9 +23,13 @@ public class TokenService(IConfiguration config) : ITokenService
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Email, user.Email!),
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
+
+        var roles = await userManager.GetRolesAsync(user);
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var tokenDecriptor = new SecurityTokenDescriptor
         {

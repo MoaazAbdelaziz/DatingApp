@@ -1,10 +1,9 @@
-using System.Text;
 using API.Data;
+using API.Entities;
 using API.Extensions;
 using API.Middleware;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices(builder.Configuration);
 
 builder.Services.AddIdentityServices(builder.Configuration);
+
+builder.Services.AddIdentityCore<AppUser>(opt =>
+{
+    opt.Password.RequireNonAlphanumeric = false;
+    opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 
@@ -32,8 +39,9 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<AppDbContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager);
 }
 catch (Exception ex)
 {
