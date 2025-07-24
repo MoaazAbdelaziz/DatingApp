@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { AccountService } from './account-service';
-import { of } from 'rxjs';
+import { tap } from 'rxjs';
 import { LikesService } from './likes-service';
 
 @Injectable({
@@ -11,12 +11,13 @@ export class InitService {
   private likesService = inject(LikesService);
 
   init() {
-    const userString = localStorage.getItem('user');
-    if (!userString) return of(null);
-    const user = JSON.parse(userString);
-    this.accoutService.setCurrentUser(user);
-    this.likesService.getLikeIds();
-
-    return of(null);
+    return this.accoutService.refreshToken().pipe(
+      tap((user) => {
+        if (user) {
+          this.accoutService.setCurrentUser(user);
+          this.accoutService.startTokenRefreshInterval();
+        }
+      })
+    );
   }
 }
